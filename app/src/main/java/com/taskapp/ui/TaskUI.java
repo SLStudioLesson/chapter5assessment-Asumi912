@@ -63,6 +63,7 @@ public class TaskUI {
                 switch (selectMenu) {
                     case "1":
                         taskLogic.showAll(loginUser);
+                        selectSubMenu();
                         break;
                     case "2":
                         inputNewInformation();
@@ -159,32 +160,38 @@ public class TaskUI {
      * @see #inputChangeInformation()
      * @see #inputDeleteInformation()
      */
-    // public void selectSubMenu() {
-    // boolean flg = true;
-    // while (flg) {
-    // try {
-    // System.out.println("以下の1~2から好きな選択肢を選んでください。");
-    // System.out.println("1. タスクのステータス変更, 2. タスク削除, 3. メインメニューに戻る");
-    // System.out.print("選択肢：");
-    // String selectMenu = reader.readLine();
-    // System.out.println();
+    public void selectSubMenu() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.println("以下の1~2から好きな選択肢を選んでください。");
+                System.out.println("1. タスクのステータス変更, 2. メインメニューに戻る");
+                System.out.print("選択肢：");
+                String selectMenu = reader.readLine();
+                System.out.println();
 
-    // switch (selectMenu) {
-    // // ステータス更新機能を呼ぶ
-    // case "1": inputChangeInformation(); break;
-    // // タスクの削除
-    // case "2": inputDeleteInformation(); break;
-    // // メインメニューに戻る
-    // case "3": flg = false; break;
-    // default: break;
-    // }
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // System.out.println();
-    // }
-    // }
-    // }
+                switch (selectMenu) {
+                    // ステータス更新機能を呼ぶ
+                    case "1":
+                        inputChangeInformation();
+                        break;
+                    // タスクの削除
+                    case "2":
+                        //inputDeleteInformation();
+                        break;
+                    // メインメニューに戻る
+                    case "3":
+                        flg = false;
+                        break;
+                    default:
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * ユーザーからのタスクステータス変更情報を受け取り、タスクのステータスを変更します。
@@ -192,8 +199,43 @@ public class TaskUI {
      * @see #isNumeric(String)
      * @see com.taskapp.logic.TaskLogic#changeStatus(int, int, User)
      */
-    // public void inputChangeInformation() {
-    // }
+    public void inputChangeInformation() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                // ステータスを変更するタスクコード、変更後のステータスを入力
+                System.out.print("ステータスを変更するタスクコードを入力してください：");
+                String taskCode = reader.readLine();
+                if (!isNumeric(taskCode)) {
+                    System.out.println("コードは半角の数字で入力してください\n");
+                    continue;
+                }
+
+                System.out.println("どのステータスに変更するか選択してください。");
+                System.out.println("1. 着手中, 2. 完了");
+                System.out.print("選択肢：");
+                String statusCode = reader.readLine();
+                if (!isNumeric(statusCode)) {
+                    System.out.println("ステータスは半角の数字で入力してください\n");
+                    continue;
+                }
+                // 変更後のステータスは、1または2か判別する
+                if (!(Integer.parseInt(statusCode) == 1 || Integer.parseInt(statusCode) == 2)) {
+                    System.out.println("ステータスは1・2の中から選択してください\n");
+                    continue;
+                }
+
+                // TaskLogic#changeStatusを呼び、ステータスを変更する
+                taskLogic.changeStatus(Integer.parseInt(taskCode), Integer.parseInt(statusCode), loginUser);
+
+                flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
 
     /**
      * ユーザーからのタスク削除情報を受け取り、タスクを削除します。
@@ -212,8 +254,8 @@ public class TaskUI {
      * @return 数値であればtrue、そうでなければfalse
      */
     public boolean isNumeric(String inputText) {
-     // テキストを文字配列にして数字かチェック
-     return inputText.chars().allMatch(Character::isDigit);
+        // テキストを文字配列にして数字かチェック
+        return inputText.chars().allMatch(Character::isDigit);
     }
 }
-//解答
+// 解答
