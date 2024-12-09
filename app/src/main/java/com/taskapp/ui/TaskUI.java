@@ -175,15 +175,15 @@ public class TaskUI {
                     case "1":
                         inputChangeInformation();
                         break;
-                    // タスクの削除
-                    case "2":
-                        //inputDeleteInformation();
-                        break;
                     // メインメニューに戻る
-                    case "3":
-                        flg = false;
+                    case "2":
+                    flg = false;
                         break;
+                    // case "3":
+                        
+                    //     break;
                     default:
+                    System.out.println("無効な選択肢です。もう一度選んでください。");
                         break;
                 }
             } catch (IOException e) {
