@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.taskapp.exception.AppException;
 import com.taskapp.logic.TaskLogic;
 import com.taskapp.logic.UserLogic;
 import com.taskapp.model.User;
@@ -25,6 +26,7 @@ public class TaskUI {
 
     /**
      * 自動採点用に必要なコンストラクタのため、皆さんはこのコンストラクタを利用・削除はしないでください
+     * 
      * @param reader
      * @param userLogic
      * @param taskLogic
@@ -45,6 +47,7 @@ public class TaskUI {
      */
     public void displayMenu() {
         System.out.println("タスク管理アプリケーションにようこそ!!");
+        inputLogin();
 
         // メインメニュー
         boolean flg = true;
@@ -59,8 +62,10 @@ public class TaskUI {
 
                 switch (selectMenu) {
                     case "1":
+                        taskLogic.showAll(loginUser);
                         break;
                     case "2":
+                        inputNewInformation();
                         break;
                     case "3":
                         System.out.println("ログアウトしました。");
@@ -82,8 +87,27 @@ public class TaskUI {
      *
      * @see com.taskapp.logic.UserLogic#login(String, String)
      */
-    // public void inputLogin() {
-    // }
+    public void inputLogin() {
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.print("メールアドレスを入力してください：");
+                String email = reader.readLine();
+
+                System.out.print("パスワードを入力してください：");
+                String password = reader.readLine();
+
+                loginUser = userLogic.login(email, password);
+                System.out.println();
+                flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * ユーザーからの新規タスク情報を受け取り、新規タスクを登録します。
@@ -91,8 +115,43 @@ public class TaskUI {
      * @see #isNumeric(String)
      * @see com.taskapp.logic.TaskLogic#save(int, String, int, User)
      */
-    // public void inputNewInformation() {
-    // }
+    public void inputNewInformation() {
+        // タスクコード、タスク名、タスクを担当するユーザーコードを入力させる
+        boolean flg = true;
+        while (flg) {
+            try {
+                System.out.print("タスクコードを入力してください：");
+                String code = reader.readLine();
+                if (!isNumeric(code)) {
+                    System.out.println("コードは半角の数字で入力してください\n");
+                    continue;
+                }
+
+                System.out.print("タスク名を入力してください：");
+                String taskName = reader.readLine();
+                if (taskName.length() >= 10) {
+                    System.out.println("タスク名は10文字以内で入力してください\n");
+                    continue;
+                }
+
+                System.out.print("担当するユーザーのコードを選択してください：");
+                String userCode = reader.readLine();
+                if (!isNumeric(userCode)) {
+                    System.out.println("コードは半角の数字で入力してください\n");
+                    continue;
+                }
+
+                // タスクデータを保存する処理
+                taskLogic.save(Integer.parseInt(code), taskName, Integer.parseInt(userCode), loginUser);
+                flg = false;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (AppException e) {
+                System.out.println(e.getMessage());
+            }
+            System.out.println();
+        }
+    }
 
     /**
      * タスクのステータス変更または削除を選択するサブメニューを表示します。
@@ -101,6 +160,30 @@ public class TaskUI {
      * @see #inputDeleteInformation()
      */
     // public void selectSubMenu() {
+    // boolean flg = true;
+    // while (flg) {
+    // try {
+    // System.out.println("以下の1~2から好きな選択肢を選んでください。");
+    // System.out.println("1. タスクのステータス変更, 2. タスク削除, 3. メインメニューに戻る");
+    // System.out.print("選択肢：");
+    // String selectMenu = reader.readLine();
+    // System.out.println();
+
+    // switch (selectMenu) {
+    // // ステータス更新機能を呼ぶ
+    // case "1": inputChangeInformation(); break;
+    // // タスクの削除
+    // case "2": inputDeleteInformation(); break;
+    // // メインメニューに戻る
+    // case "3": flg = false; break;
+    // default: break;
+    // }
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
+    // System.out.println();
+    // }
+    // }
     // }
 
     /**
@@ -128,7 +211,9 @@ public class TaskUI {
      * @param inputText 判定する文字列
      * @return 数値であればtrue、そうでなければfalse
      */
-    // public boolean isNumeric(String inputText) {
-    //     return false;
-    // }
+    public boolean isNumeric(String inputText) {
+     // テキストを文字配列にして数字かチェック
+     return inputText.chars().allMatch(Character::isDigit);
+    }
 }
+//解答
